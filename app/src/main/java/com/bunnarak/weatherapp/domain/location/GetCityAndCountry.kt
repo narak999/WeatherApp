@@ -8,18 +8,21 @@ import java.util.Locale
 
 var latitude: Double = 0.0
 var longitude: Double = 0.0
+var location: String = ""
 @Composable
-fun getCityAndCountry (
-    context: Context
-):String {
+fun GetCityAndCountry (
+    context: Context,
+    lat: Double,
+    long: Double
+) {
     var address by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
 
-    LaunchedEffect(key1 = context, key2 = latitude, key3 = longitude) {
+    LaunchedEffect(key1 = context, key2 = lat, key3 = long) {
         isLoading = true
         address = try {
             val geocoder = Geocoder(context, Locale.getDefault())
-            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+            val addresses = geocoder.getFromLocation(lat, long, 1)
             val city = addresses[0].locality ?: ""
             val country = addresses[0].countryCode ?: ""
             "$city, $country"
@@ -30,15 +33,27 @@ fun getCityAndCountry (
     }
 
     if (isLoading) {
-        return "Loading Address"
+        location = "Loading Address"
     }
-    return address
+    location = address
 }
 
-fun getLat(lat: Double){
+fun getLocationCity(): String {
+    return location
+}
+
+fun setLat(lat: Double){
     latitude = lat
 }
 
-fun getLong(long: Double) {
+fun setLong(long: Double) {
     longitude = long
+}
+
+fun getLat(): Double {
+    return latitude
+}
+
+fun getLong(): Double {
+    return longitude
 }

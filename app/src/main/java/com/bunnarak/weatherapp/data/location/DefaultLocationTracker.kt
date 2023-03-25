@@ -9,7 +9,6 @@ import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.bunnarak.weatherapp.domain.location.LocationTracker
-import com.bunnarak.weatherapp.domain.location.getCityAndCountry
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject

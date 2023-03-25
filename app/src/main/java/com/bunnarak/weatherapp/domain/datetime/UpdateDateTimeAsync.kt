@@ -8,7 +8,7 @@ import java.util.*
 
 // Define a function to get the current date and time as a formatted string
 private fun getCurrentDateTimeString(): String {
-    return LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
+    return LocalDateTime.now().format(DateTimeFormatter.ofPattern("h:mm a"))
 }
 
 // Define a coroutine function to update the date and time asynchronously

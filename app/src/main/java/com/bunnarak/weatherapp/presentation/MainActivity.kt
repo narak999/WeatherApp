@@ -1,6 +1,5 @@
 package com.bunnarak.weatherapp.presentation
 
-import android.icu.number.Scale
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,20 +7,20 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.bunnarak.weatherapp.domain.datetime.updateDateTimeTextAsync
-import com.bunnarak.weatherapp.presentation.SearchBar
+import com.bunnarak.weatherapp.domain.location.setLat
+import com.bunnarak.weatherapp.domain.location.setLong
+import com.bunnarak.weatherapp.domain.location.getLatLngFromLocationName
 import com.bunnarak.weatherapp.presentation.ui.theme.WeatherAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -75,14 +74,18 @@ class MainActivity : ComponentActivity() {
                             onSearch = {query ->
                                 setLocationName(query)
                                 scope.launch {
-                                    println(query)
+                                    val coordinate: Pair<Double, Double>? = getLatLngFromLocationName(context, query)
+                                    if (coordinate != null) {
+                                        setLat(coordinate.first)
+                                        setLong(coordinate.second)
+                                    }
                                 }
                             }
                         )
                         Spacer(modifier = Modifier.height(5.dp))
                         WeatherCard(
-                            state = viewModel.state,
-                            backgroundColor = Color(0xFF3278bf),
+                            viewModel = viewModel,
+                            backgroundColor = Color(0xFF009DFF),
                             context = context,
                             dateTime = dateTimeText
                         )

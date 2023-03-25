@@ -17,20 +17,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.bunnarak.weatherapp.domain.location.getCityAndCountry
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import com.bunnarak.weatherapp.domain.location.GetCityAndCountry
+import com.bunnarak.weatherapp.domain.location.getLat
+import com.bunnarak.weatherapp.domain.location.getLocationCity
+import com.bunnarak.weatherapp.domain.location.getLong
 import kotlin.math.roundToInt
 
 @Composable
 fun WeatherCard (
-    state: WeatherState,
+    viewModel: WeatherViewModel,
     backgroundColor: Color,
     context: Context,
     dateTime: MutableState<String>,
     modifier: Modifier = Modifier
 ) {
-    state.weatherInfo?.currentWeatherData?.let { data ->
+    viewModel.loadWeatherInfo()
+    viewModel.state.weatherInfo?.currentWeatherData?.let { data ->
+        GetCityAndCountry(context = context, lat = getLat(), long = getLong())
         Card (
             backgroundColor = backgroundColor,
             shape = RoundedCornerShape(10.dp),
@@ -53,7 +56,7 @@ fun WeatherCard (
                         style = MaterialTheme.typography.body1
                     )
                     Text(
-                        text = getCityAndCountry(context = context),
+                        text = getLocationCity(),
                         color = Color.White,
                         style = MaterialTheme.typography.body1
                     )
