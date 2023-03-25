@@ -1,13 +1,13 @@
 package com.bunnarak.weatherapp.presentation
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bunnarak.weatherapp.domain.location.getCityAndCountry
 import com.bunnarak.weatherapp.domain.location.LocationTracker
+import com.bunnarak.weatherapp.domain.location.getLat
+import com.bunnarak.weatherapp.domain.location.getLong
 import com.bunnarak.weatherapp.domain.repository.WeatherRepository
 import com.bunnarak.weatherapp.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,18 +22,19 @@ class WeatherViewModel @Inject constructor(
     var state by mutableStateOf(WeatherState())
         private set
 
-    fun loadWeatherInfo(context: Context) {
+    fun loadWeatherInfo() {
         viewModelScope.launch {
             state = state.copy(
                 isLoading = true,
                 error = null
             )
             locationTracker.getCurrentLocation()?.let { location ->
+                getLat(location.latitude)
+                getLong(location.longitude)
                 when (val result = repository.getWeatherData(location.latitude, location.longitude)) {
                     is Resource.Success -> {
                         state = state.copy(
                             weatherInfo = result.data,
-                            cityCountry = getCityAndCountry(context, location.latitude, location.longitude),
                             isLoading = false,
                             error = null
                         )
@@ -41,7 +42,6 @@ class WeatherViewModel @Inject constructor(
                     is Resource.Error -> {
                         state = state.copy(
                             weatherInfo = null,
-                            cityCountry = null,
                             isLoading = false,
                             error = result.message
                         )

@@ -1,5 +1,6 @@
 package com.bunnarak.weatherapp.presentation
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,6 +8,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bunnarak.weatherapp.domain.location.getCityAndCountry
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
@@ -23,6 +26,8 @@ import kotlin.math.roundToInt
 fun WeatherCard (
     state: WeatherState,
     backgroundColor: Color,
+    context: Context,
+    dateTime: MutableState<String>,
     modifier: Modifier = Modifier
 ) {
     state.weatherInfo?.currentWeatherData?.let { data ->
@@ -43,16 +48,12 @@ fun WeatherCard (
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Today ${
-                            LocalDateTime.now().format(
-                                DateTimeFormatter.ofPattern("HH:mm")
-                            )
-                        }",
+                        text = "Today ${dateTime.value}",
                         color = Color.White,
                         style = MaterialTheme.typography.body1
                     )
                     Text(
-                        text = state.cityCountry ?: "Default",
+                        text = getCityAndCountry(context = context),
                         color = Color.White,
                         style = MaterialTheme.typography.body1
                     )
