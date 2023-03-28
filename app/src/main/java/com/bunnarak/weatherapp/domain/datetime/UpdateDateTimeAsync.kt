@@ -1,5 +1,7 @@
 package com.bunnarak.weatherapp.domain.datetime
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -15,7 +17,8 @@ private fun getCurrentDateTimeString(): String {
 @OptIn(DelicateCoroutinesApi::class)
 @ExperimentalCoroutinesApi
 fun updateDateTimeTextAsync(updateText: (String) -> Unit): Job {
-    return GlobalScope.launch(Dispatchers.Main) {
+    return GlobalScope.launch(Dispatchers.IO) {
+        Log.d(TAG, "updateDateTimeTextAsync: ${Thread.currentThread().name}")
         while (isActive) {
             // Get the current date and time as a formatted string
             val currentDateTimeString = getCurrentDateTimeString()

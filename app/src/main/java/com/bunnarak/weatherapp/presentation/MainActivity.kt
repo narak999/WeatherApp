@@ -1,6 +1,8 @@
 package com.bunnarak.weatherapp.presentation
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -23,8 +25,7 @@ import com.bunnarak.weatherapp.domain.location.setLong
 import com.bunnarak.weatherapp.domain.location.getLatLngFromLocationName
 import com.bunnarak.weatherapp.presentation.ui.theme.WeatherAppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -32,7 +33,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel: WeatherViewModel by viewModels()
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val context = this
@@ -47,7 +48,6 @@ class MainActivity : ComponentActivity() {
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
         ))
         setContent {
-            val scope = rememberCoroutineScope()
             val (locationName, setLocationName) = remember { mutableStateOf("") }
             val dateTimeText = remember { mutableStateOf("") }
             LaunchedEffect(Unit) {
@@ -73,7 +73,8 @@ class MainActivity : ComponentActivity() {
                             hint = "Enter location name",
                             onSearch = {query ->
                                 setLocationName(query)
-                                scope.launch {
+                                GlobalScope.launch(Dispatchers.IO) {
+                                    Log.d(TAG, "Search Bar: ${Thread.currentThread().name}")
                                     val coordinate: Pair<Double, Double>? = getLatLngFromLocationName(context, query)
                                     if (coordinate != null) {
                                         setLat(coordinate.first)

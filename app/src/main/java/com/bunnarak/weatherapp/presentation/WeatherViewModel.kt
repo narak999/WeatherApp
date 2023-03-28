@@ -1,6 +1,8 @@
 package com.bunnarak.weatherapp.presentation
 
+import android.content.ContentValues.TAG
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,7 +12,9 @@ import com.bunnarak.weatherapp.domain.location.*
 import com.bunnarak.weatherapp.domain.repository.WeatherRepository
 import com.bunnarak.weatherapp.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,7 +43,11 @@ class WeatherViewModel @Inject constructor(
                     setLat(location.latitude)
                     setLong(location.longitude)
                 }
-                when (val result = repository.getWeatherData(latitude, longitude)) {
+                val result = withContext(Dispatchers.IO) {
+                    Log.d(TAG, "loadWeatherInfo: ${Thread.currentThread().name}")
+                    repository.getWeatherData(latitude, longitude)
+                }
+                when (result) {
                     is Resource.Success -> {
                         state = state.copy(
                             weatherInfo = result.data,
