@@ -10,16 +10,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.bunnarak.weatherapp.domain.datetime.updateDateTimeTextAsync
 import com.bunnarak.weatherapp.domain.location.setLat
 import com.bunnarak.weatherapp.domain.location.setLong
 import com.bunnarak.weatherapp.domain.location.getLatLngFromLocationName
@@ -49,11 +46,6 @@ class MainActivity : ComponentActivity() {
         ))
         setContent {
             val (locationName, setLocationName) = remember { mutableStateOf("") }
-            val dateTimeText = remember { mutableStateOf("") }
-            LaunchedEffect(Unit) {
-                val job = updateDateTimeTextAsync { dateTimeText.value = it }
-                onDestroy()
-            }
             WeatherAppTheme {
                 Box(
                     modifier = Modifier.fillMaxSize()
@@ -87,8 +79,7 @@ class MainActivity : ComponentActivity() {
                         WeatherCard(
                             viewModel = viewModel,
                             backgroundColor = Color(0xFF009DFF),
-                            context = context,
-                            dateTime = dateTimeText
+                            context = context
                         )
                     }
                 }

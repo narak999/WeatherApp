@@ -17,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bunnarak.weatherapp.domain.datetime.convertLatLngToDateTime
 import com.bunnarak.weatherapp.domain.location.GetCityAndCountry
 import com.bunnarak.weatherapp.domain.location.getLat
 import com.bunnarak.weatherapp.domain.location.getLocationCity
@@ -28,12 +29,14 @@ fun WeatherCard (
     viewModel: WeatherViewModel,
     backgroundColor: Color,
     context: Context,
-    dateTime: MutableState<String>,
     modifier: Modifier = Modifier
 ) {
+    val latitude = getLat()
+    val longitude = getLong()
     viewModel.loadWeatherInfo()
+    val dateTime = convertLatLngToDateTime(latitude, longitude)
     viewModel.state.weatherInfo?.currentWeatherData?.let { data ->
-        GetCityAndCountry(context = context, lat = getLat(), long = getLong())
+        GetCityAndCountry(context = context, lat = latitude, long = longitude)
         Card (
             backgroundColor = backgroundColor,
             shape = RoundedCornerShape(10.dp),
@@ -51,7 +54,7 @@ fun WeatherCard (
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Today ${dateTime.value}",
+                        text = dateTime,
                         color = Color.White,
                         style = MaterialTheme.typography.body1
                     )
