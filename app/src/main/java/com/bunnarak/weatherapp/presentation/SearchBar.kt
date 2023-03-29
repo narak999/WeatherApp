@@ -33,7 +33,6 @@ fun SearchBar(
 ) {
     val focusManager = LocalFocusManager.current
     var searchText by remember { mutableStateOf("") }
-    var flag = false
 
     Row(
         modifier
