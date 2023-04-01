@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun HourlyForecast (
     state: WeatherState,
-    modifier: Modifier = Modifier
 ) {
     state.weatherInfo?.currentWeatherData?.let { data ->
         Column(

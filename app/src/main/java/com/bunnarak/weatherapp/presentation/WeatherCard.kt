@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -34,29 +36,27 @@ import kotlin.math.roundToInt
 fun WeatherCard (
     viewModel: WeatherViewModel,
     backgroundColor: Color,
-    context: Context,
-    modifier: Modifier = Modifier
+    context: Context
 ) {
+    viewModel.loadWeatherInfo()
+    viewModel.loadDailyWeatherInfo()
     var rotated by remember {
         mutableStateOf(false)
     }
     val rotation by animateFloatAsState(
         targetValue = if (rotated) 180f else 0f,
-        animationSpec = tween(500)
+        animationSpec = tween(300)
     )
 
     val animateFront by animateFloatAsState(
         targetValue = if (!rotated) 1f else 0f,
-        animationSpec = tween(500)
+        animationSpec = tween(300)
     )
 
     val animateBack by animateFloatAsState(
         targetValue = if (rotated) 1f else 0f,
-        animationSpec = tween(500)
+        animationSpec = tween(300)
     )
-
-    viewModel.loadWeatherInfo()
-    viewModel.loadDailyWeatherInfo()
 
     val latitude = getLat()
     val longitude = getLong()
@@ -66,11 +66,11 @@ fun WeatherCard (
         Card (
             backgroundColor = backgroundColor,
             shape = RoundedCornerShape(10.dp),
-            modifier = modifier
+            modifier = Modifier
                 .padding(16.dp)
                 .graphicsLayer {
                     rotationY = rotation
-                    cameraDistance = 8 * density
+                    cameraDistance = 4 * density
                 }
                 .clickable {
                     rotated = !rotated
@@ -79,7 +79,7 @@ fun WeatherCard (
         ) {
             if (!rotated) {
                 Column(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -136,7 +136,7 @@ fun WeatherCard (
                             WeatherIconDisplay(
                                 value = data.pressure.roundToInt(),
                                 unit = " hpa",
-                                icon = ImageVector.vectorResource(id = com.bunnarak.weatherapp.R.drawable.ic_pressure),
+                                icon = ImageVector.vectorResource(id=R.drawable.ic_pressure),
                                 iconTint = Color.White,
                                 textStyle = MaterialTheme.typography.body1,
                                 modifier = Modifier.graphicsLayer { alpha = animateFront }
@@ -144,7 +144,7 @@ fun WeatherCard (
                             WeatherIconDisplay(
                                 value = data.humidity.roundToInt(),
                                 unit = "%",
-                                icon = ImageVector.vectorResource(id = com.bunnarak.weatherapp.R.drawable.ic_drop),
+                                icon = ImageVector.vectorResource(id=R.drawable.ic_drop),
                                 iconTint = Color.White,
                                 textStyle = MaterialTheme.typography.body1,
                                 modifier = Modifier.graphicsLayer { alpha = animateFront }
@@ -152,7 +152,7 @@ fun WeatherCard (
                             WeatherIconDisplay(
                                 value = data.windSpeed.roundToInt(),
                                 unit = "km/h",
-                                icon = ImageVector.vectorResource(id = com.bunnarak.weatherapp.R.drawable.ic_wind),
+                                icon = ImageVector.vectorResource(id=R.drawable.ic_wind),
                                 iconTint = Color.White,
                                 textStyle = MaterialTheme.typography.body1,
                                 modifier = Modifier.graphicsLayer { alpha = animateFront }
@@ -163,7 +163,7 @@ fun WeatherCard (
             }
         else {
             Column(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 horizontalAlignment = Alignment.End
