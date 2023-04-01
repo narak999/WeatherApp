@@ -11,6 +11,5 @@ fun convertLatLngToDateTime(lat: Double, lng: Double): String {
     val dateTimeFormatter = DateTimeFormatter.ofPattern("MMM dd h:mm a")
     val zonedDateTime = ZonedDateTime.now()
     val updatedZonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.of(timezoneID)).format(dateTimeFormatter)
-    println(updatedZonedDateTime)
     return updatedZonedDateTime
 }

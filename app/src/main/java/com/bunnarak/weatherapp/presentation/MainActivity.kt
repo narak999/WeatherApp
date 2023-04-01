@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
             ActivityResultContracts.RequestMultiplePermissions()
         ) {
             viewModel.loadWeatherInfo()
+            viewModel.loadDailyWeatherInfo()
         }
         permissionLauncher.launch(arrayOf(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -46,41 +47,40 @@ class MainActivity : ComponentActivity() {
         ))
         setContent {
             val (locationName, setLocationName) = remember { mutableStateOf("") }
-            WeatherAppTheme {
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Image(
-                        painter = painterResource(
-                            id = viewModel.state.weatherInfo?.currentWeatherData?.weatherType?.backgroundImage
-                                ?: com.bunnarak.weatherapp.R.drawable.default_image
-                        ),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
+            viewModel.state.weatherInfo?.currentWeatherData?.weatherType?.let { data ->
+                WeatherAppTheme {
+                    Box(
                         modifier = Modifier.fillMaxSize()
-                    )
-                    Column (modifier = Modifier.fillMaxSize()) {
-                        Spacer(modifier = Modifier.height(23.dp))
-                        SearchBar(
-                            hint = "Enter location name",
-                            onSearch = {query ->
-                                setLocationName(query)
-                                GlobalScope.launch(Dispatchers.IO) {
-                                    Log.d(TAG, "Search Bar: ${Thread.currentThread().name}")
-                                    val coordinate: Pair<Double, Double>? = getLatLngFromLocationName(context, query)
-                                    if (coordinate != null) {
-                                        setLat(coordinate.first)
-                                        setLong(coordinate.second)
+                    ) {
+                        Image(
+                            painter = painterResource(id = data.backgroundImage),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Column (modifier = Modifier.fillMaxSize()) {
+                            Spacer(modifier = Modifier.height(23.dp))
+                            SearchBar(
+                                hint = "Enter location name",
+                                onSearch = {query ->
+                                    setLocationName(query)
+                                    GlobalScope.launch(Dispatchers.IO) {
+                                        Log.d(TAG, "Search Bar: ${Thread.currentThread().name}")
+                                        val coordinate: Pair<Double, Double>? = getLatLngFromLocationName(context, query)
+                                        if (coordinate != null) {
+                                            setLat(coordinate.first)
+                                            setLong(coordinate.second)
+                                        }
                                     }
                                 }
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        WeatherCard(
-                            viewModel = viewModel,
-                            backgroundColor = Color(0xFF009DFF),
-                            context = context
-                        )
+                            )
+                            Spacer(modifier = Modifier.height(5.dp))
+                            WeatherCard(
+                                viewModel = viewModel,
+                                backgroundColor = Color(0xFF009DFF),
+                                context = context
+                            )
+                        }
                     }
                 }
             }

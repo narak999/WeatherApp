@@ -1,8 +1,6 @@
 package com.bunnarak.weatherapp.presentation
 
 import android.content.Context
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -20,14 +18,16 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bunnarak.weatherapp.R
 import com.bunnarak.weatherapp.domain.datetime.convertLatLngToDateTime
 import com.bunnarak.weatherapp.domain.location.GetCityAndCountry
 import com.bunnarak.weatherapp.domain.location.getLat
 import com.bunnarak.weatherapp.domain.location.getLocationCity
 import com.bunnarak.weatherapp.domain.location.getLong
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 @Composable
@@ -55,18 +55,14 @@ fun WeatherCard (
         animationSpec = tween(500)
     )
 
-    val animateColor by animateColorAsState(
-        targetValue = if (rotated) Color.Blue else Color.Green,
-        animationSpec = tween(500)
-    )
-
+    viewModel.loadWeatherInfo()
+    viewModel.loadDailyWeatherInfo()
 
     val latitude = getLat()
     val longitude = getLong()
-    viewModel.loadWeatherInfo()
+
     val dateTime = convertLatLngToDateTime(latitude, longitude)
-    viewModel.state.weatherInfo?.currentWeatherData?.let { data ->
-        GetCityAndCountry(context = context, lat = latitude, long = longitude)
+    GetCityAndCountry(context = context, lat = latitude, long = longitude)
         Card (
             backgroundColor = backgroundColor,
             shape = RoundedCornerShape(10.dp),
@@ -77,94 +73,194 @@ fun WeatherCard (
                     cameraDistance = 8 * density
                 }
                 .clickable {
-                   rotated = !rotated
+                    rotated = !rotated
                 },
             elevation = 8.dp
         ) {
-            Column (
+            if (!rotated) {
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    viewModel.state.weatherInfo?.currentWeatherData?.let { data ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = dateTime,
+                                color = Color.White,
+                                style = MaterialTheme.typography.body1,
+                                modifier = Modifier.graphicsLayer { alpha = animateFront }
+                            )
+                            Text(
+                                text = getLocationCity(),
+                                color = Color.White,
+                                style = MaterialTheme.typography.body1,
+                                modifier = Modifier.graphicsLayer { alpha = animateFront }
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Image(
+                            painter = painterResource(
+                                id = data.weatherType.iconRes
+                            ),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(200.dp)
+                                .graphicsLayer { alpha = animateFront }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "${data.temperatureCelsius.toInt()}°C",
+                            fontSize = 50.sp,
+                            color = Color.White,
+                            style = MaterialTheme.typography.body1,
+                            modifier = Modifier.graphicsLayer { alpha = animateFront }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = data.weatherType.weatherDesc,
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            style = MaterialTheme.typography.body1,
+                            modifier = Modifier.graphicsLayer { alpha = animateFront }
+                        )
+                        Spacer(modifier = Modifier.height(32.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            WeatherIconDisplay(
+                                value = data.pressure.roundToInt(),
+                                unit = " hpa",
+                                icon = ImageVector.vectorResource(id = com.bunnarak.weatherapp.R.drawable.ic_pressure),
+                                iconTint = Color.White,
+                                textStyle = MaterialTheme.typography.body1,
+                                modifier = Modifier.graphicsLayer { alpha = animateFront }
+                            )
+                            WeatherIconDisplay(
+                                value = data.humidity.roundToInt(),
+                                unit = "%",
+                                icon = ImageVector.vectorResource(id = com.bunnarak.weatherapp.R.drawable.ic_drop),
+                                iconTint = Color.White,
+                                textStyle = MaterialTheme.typography.body1,
+                                modifier = Modifier.graphicsLayer { alpha = animateFront }
+                            )
+                            WeatherIconDisplay(
+                                value = data.windSpeed.roundToInt(),
+                                unit = "km/h",
+                                icon = ImageVector.vectorResource(id = com.bunnarak.weatherapp.R.drawable.ic_wind),
+                                iconTint = Color.White,
+                                textStyle = MaterialTheme.typography.body1,
+                                modifier = Modifier.graphicsLayer { alpha = animateFront }
+                            )
+                        }
+                    }
+                }
+            }
+        else {
+            Column(
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.End
             ) {
-                if (!rotated) {
+                viewModel.state2.dailyWeatherInfo?.dailyCurrentWeatherData?.let { data ->
+                    val sunriseDT = LocalDateTime.parse(data.sunrise, DateTimeFormatter.ISO_DATE_TIME).format(
+                        DateTimeFormatter.ofPattern("h:mm a"))
+                    val sunsetDT = LocalDateTime.parse(data.sunset, DateTimeFormatter.ISO_DATE_TIME).format(
+                        DateTimeFormatter.ofPattern("h:mm a"))
+
+                    Spacer(modifier = Modifier.height(5.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            text = dateTime,
-                            color = Color.White,
-                            style = MaterialTheme.typography.body1
-                        )
                         Text(
                             text = getLocationCity(),
                             color = Color.White,
-                            style = MaterialTheme.typography.body1
+                            style = MaterialTheme.typography.body1,
+                            modifier = Modifier.graphicsLayer {
+                                alpha = animateBack
+                                rotationY = rotation
+                            }
                         )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Image(
-                        painter = painterResource(id = data.weatherType.iconRes),
-                        contentDescription = null,
-                        modifier = Modifier.width(200.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "${data.temperatureCelsius.toInt()}°C",
-                        fontSize = 50.sp,
-                        color = Color.White,
-                        style = MaterialTheme.typography.body1
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = data.weatherType.weatherDesc,
-                        fontSize = 20.sp,
-                        color = Color.White,
-                        style = MaterialTheme.typography.body1
-                    )
-                    Spacer(modifier = Modifier.height(32.dp))
-                    Row (
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        WeatherIconDisplay(
-                            value = data.pressure.roundToInt(),
-                            unit = " hpa",
-                            icon = ImageVector.vectorResource(id = com.bunnarak.weatherapp.R.drawable.ic_pressure),
-                            iconTint = Color.White,
-                            textStyle = MaterialTheme.typography.body1
-                        )
-                        WeatherIconDisplay(
-                            value = data.humidity.roundToInt(),
-                            unit = "%",
-                            icon = ImageVector.vectorResource(id = com.bunnarak.weatherapp.R.drawable.ic_drop),
-                            iconTint = Color.White,
-                            textStyle = MaterialTheme.typography.body1
-                        )
-                        WeatherIconDisplay(
-                            value = data.windSpeed.roundToInt(),
-                            unit = "km/h",
-                            icon = ImageVector.vectorResource(id = com.bunnarak.weatherapp.R.drawable.ic_wind),
-                            iconTint = Color.White,
-                            textStyle = MaterialTheme.typography.body1
-                        )
-                    }
-                } else {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
                         Text(
                             text = dateTime,
                             color = Color.White,
                             style = MaterialTheme.typography.body1,
-                            modifier = Modifier
-                                .graphicsLayer {
-                                    rotationY = rotation
-                                }
+                            modifier = Modifier.graphicsLayer {
+                                alpha = animateBack
+                                rotationY = rotation
+                            }
                         )
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    DailyWeatherDetailText(
+                        icon = ImageVector.vectorResource(id = R.drawable.thermometer_up_742_svgrepo_com),
+                        value = "Max Temp: ${data.temperatureMax}°C",
+                        rotation = rotation,
+                        animateBack = animateBack
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    DailyWeatherDetailText(
+                        icon = ImageVector.vectorResource(id = R.drawable.thermometer_down_741_svgrepo_com),
+                        value = "Min Temp: ${data.temperatureMin}°C",
+                        rotation = rotation,
+                        animateBack = animateBack
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    DailyWeatherDetailText(
+                        icon = ImageVector.vectorResource(id = R.drawable.sunrise_up_svgrepo_com),
+                        value = "Sunrise: $sunriseDT",
+                        rotation = rotation,
+                        animateBack = animateBack
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    DailyWeatherDetailText(
+                        icon = ImageVector.vectorResource(id = R.drawable.sunset_down_svgrepo_com),
+                        value = "Sunset: $sunsetDT",
+                        rotation = rotation,
+                        animateBack = animateBack
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    DailyWeatherDetailText(
+                        icon = ImageVector.vectorResource(id = R.drawable.hot_temperature_svgrepo_com),
+                        value = "UV Index: ${data.uvIndexMax}",
+                        rotation = rotation,
+                        animateBack = animateBack
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    DailyWeatherDetailText(
+                        icon = ImageVector.vectorResource(id = R.drawable.rain_gauge_svgrepo_com),
+                        value = "Total Precipitation: ${data.precipitationSum}mm",
+                        rotation = rotation,
+                        animateBack = animateBack
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    DailyWeatherDetailText(
+                        icon = ImageVector.vectorResource(id = R.drawable.rain_svgrepo_com),
+                        value = "Precipitation Hours: ${data.precipitationHours}h",
+                        rotation = rotation,
+                        animateBack = animateBack
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    DailyWeatherDetailText(
+                        icon = ImageVector.vectorResource(id = R.drawable.percent_symbol_svgrepo_com),
+                        value = "Precipitation Prob: ${data.precipitationProbability}%",
+                        rotation = rotation,
+                        animateBack = animateBack
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    DailyWeatherDetailText(
+                        icon = ImageVector.vectorResource(id = R.drawable.wind_svgrepo_com),
+                        value = "Max Wind Speed: ${data.windspeedMax}km/h",
+                        rotation = rotation,
+                        animateBack = animateBack)
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }

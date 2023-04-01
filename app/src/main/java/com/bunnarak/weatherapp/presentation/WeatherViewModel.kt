@@ -25,6 +25,9 @@ class WeatherViewModel @Inject constructor(
     var state by mutableStateOf(WeatherState())
         private set
 
+    var state2 by mutableStateOf(DailyWeatherState())
+        private set
+
     fun loadWeatherInfo() {
         var latitude: Double
         var longitude: Double
@@ -65,6 +68,52 @@ class WeatherViewModel @Inject constructor(
                 }
             } ?: kotlin.run {
                 state = state.copy(
+                    isLoading = false,
+                    error = "Could not retrieve location. Please allow location access to continue!"
+                )
+            }
+        }
+    }
+    fun loadDailyWeatherInfo() {
+        var latitude: Double
+        var longitude: Double
+        viewModelScope.launch {
+            state2 = state2.copy(
+                isLoading = true,
+                error = null
+            )
+            locationTracker.getCurrentLocation()?.let { location ->
+                if (getLocation()) {
+                    latitude = getLat()
+                    longitude = getLong()
+                } else {
+                    latitude = location.latitude
+                    longitude = location.longitude
+                    setLat(location.latitude)
+                    setLong(location.longitude)
+                }
+                val result = withContext(Dispatchers.IO) {
+                    Log.d(TAG, "loadDailyWeatherInfo: ${Thread.currentThread().name}")
+                    repository.getDailyWeatherData(latitude, longitude)
+                }
+                when (result) {
+                    is Resource.Success -> {
+                        state2 = state2.copy(
+                            dailyWeatherInfo = result.data,
+                            isLoading = false,
+                            error = null
+                        )
+                    }
+                    is Resource.Error -> {
+                        state2 = state2.copy(
+                            dailyWeatherInfo = null,
+                            isLoading = false,
+                            error = result.message
+                        )
+                    }
+                }
+            } ?: kotlin.run {
+                state2 = state2.copy(
                     isLoading = false,
                     error = "Could not retrieve location. Please allow location access to continue!"
                 )
