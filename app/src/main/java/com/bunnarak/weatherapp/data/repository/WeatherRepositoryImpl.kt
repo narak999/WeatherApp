@@ -1,6 +1,5 @@
 package com.bunnarak.weatherapp.data.repository
 
-import android.content.Context
 import com.bunnarak.weatherapp.data.mapper.toDailyWeatherInfo
 import com.bunnarak.weatherapp.data.mapper.toWeatherInfo
 import com.bunnarak.weatherapp.data.remote.WeatherApi
@@ -18,7 +17,8 @@ class WeatherRepositoryImpl @Inject constructor(
             Resource.Success(
                 data = api.getWeatherData(
                     lat = lat,
-                    long = long
+                    long = long,
+                    timezone = "auto"
                 ).toWeatherInfo()
             )
         } catch (e: Exception) {

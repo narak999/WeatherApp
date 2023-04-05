@@ -2,6 +2,7 @@ package com.bunnarak.weatherapp.data.mapper
 
 import com.bunnarak.weatherapp.data.remote.DailyWeatherDataDto
 import com.bunnarak.weatherapp.data.remote.DailyWeatherDto
+import com.bunnarak.weatherapp.domain.datetime.getDateTime
 import com.bunnarak.weatherapp.domain.weather.*
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -43,14 +44,17 @@ fun DailyWeatherDataDto.toDailyWeatherData(): Map<Int, List<DailyWeatherData>> {
     }.mapValues { it ->
         it.value.map {it.data}
     }
+        //.also { println(it[0]) }
 }
 
 fun DailyWeatherDto.toDailyWeatherInfo(): DailyWeatherInfo {
     val weatherDataMap = dailyWeatherData.toDailyWeatherData()
-    val now = LocalDateTime.now()
+    val now = getDateTime()
+    //val now = LocalDateTime.now()
     val currentWeatherData = weatherDataMap[0]?.find {
         it.time.dayOfMonth == now.dayOfMonth
     }
+    //println(currentWeatherData)
     return DailyWeatherInfo(
         dailyWeatherDataPerDay = weatherDataMap,
         dailyCurrentWeatherData = currentWeatherData

@@ -1,7 +1,6 @@
 package com.bunnarak.weatherapp.presentation
 
 import android.content.ContentValues.TAG
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,13 +40,14 @@ class WeatherViewModel @Inject constructor(
                     latitude = getLat()
                     longitude = getLong()
                 } else {
-                    latitude = location.latitude
-                    longitude = location.longitude
-                    setLat(location.latitude)
-                    setLong(location.longitude)
+                    latitude = String.format("%.3f", location.latitude).toDouble()
+                    longitude = String.format("%.3f", location.longitude).toDouble()
+                    setLat(latitude)
+                    setLong(longitude)
                 }
+                println("Latitude: $latitude\nLongitude: $longitude")
                 val result = withContext(Dispatchers.IO) {
-                    Log.d(TAG, "loadWeatherInfo: ${Thread.currentThread().name}")
+                    //Log.d(TAG, "loadWeatherInfo: ${Thread.currentThread().name}")
                     repository.getWeatherData(latitude, longitude)
                 }
                 when (result) {
@@ -87,13 +87,14 @@ class WeatherViewModel @Inject constructor(
                     latitude = getLat()
                     longitude = getLong()
                 } else {
-                    latitude = location.latitude
-                    longitude = location.longitude
-                    setLat(location.latitude)
-                    setLong(location.longitude)
+                    latitude = String.format("%.3f", location.latitude).toDouble()
+                    longitude = String.format("%.3f", location.longitude).toDouble()
+                    setLat(latitude)
+                    setLong(longitude)
                 }
+                //println("Latitude: $latitude\nLongitude: $longitude")
                 val result = withContext(Dispatchers.IO) {
-                    Log.d(TAG, "loadDailyWeatherInfo: ${Thread.currentThread().name}")
+                    //Log.d(TAG, "loadDailyWeatherInfo: ${Thread.currentThread().name}")
                     repository.getDailyWeatherData(latitude, longitude)
                 }
                 when (result) {
@@ -118,6 +119,13 @@ class WeatherViewModel @Inject constructor(
                     error = "Could not retrieve location. Please allow location access to continue!"
                 )
             }
+        }
+    }
+
+    suspend fun setCurrentLocation() {
+        locationTracker.getCurrentLocation()?.let { location ->
+            setLat(location.latitude)
+            setLong(location.longitude)
         }
     }
 }

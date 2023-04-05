@@ -47,11 +47,11 @@ fun getLocationCity(): String {
 }
 
 fun setLat(lat: Double){
-    latitude = lat
+    latitude = String.format("%.3f", lat).toDouble()
 }
 
 fun setLong(long: Double) {
-    longitude = long
+    longitude = String.format("%.3f", long).toDouble()
 }
 
 fun getLat(): Double {

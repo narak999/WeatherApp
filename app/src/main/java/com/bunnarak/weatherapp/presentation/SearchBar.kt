@@ -74,7 +74,11 @@ fun SearchBar(
             )
         )
         IconButton(
-            onClick = { onSearch(searchText) }
+            onClick = {
+                onSearch(searchText)
+                focusManager.clearFocus()
+                searchText = ""
+            }
         ) {
             Icon(Icons.Filled.Search, "Search")
         }

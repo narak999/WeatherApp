@@ -10,16 +10,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import com.bunnarak.weatherapp.domain.location.setLat
-import com.bunnarak.weatherapp.domain.location.setLong
-import com.bunnarak.weatherapp.domain.location.getLatLngFromLocationName
+import com.bunnarak.weatherapp.R
+import com.bunnarak.weatherapp.domain.location.*
 import com.bunnarak.weatherapp.presentation.ui.theme.WeatherAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -63,9 +67,9 @@ class MainActivity : ComponentActivity() {
                             SearchBar(
                                 hint = "Enter location name",
                                 onSearch = {query ->
-                                    setLocationName(query)
+                                    //setLocationName(query)
                                     GlobalScope.launch(Dispatchers.IO) {
-                                        Log.d(TAG, "Search Bar: ${Thread.currentThread().name}")
+                                        //Log.d(TAG, "Search Bar: ${Thread.currentThread().name}")
                                         val coordinate: Pair<Double, Double>? = getLatLngFromLocationName(context, query)
                                         if (coordinate != null) {
                                             setLat(coordinate.first)
@@ -79,6 +83,32 @@ class MainActivity : ComponentActivity() {
                                 viewModel = viewModel,
                                 backgroundColor = Color(0xFF009DFF),
                                 context = context
+                            )
+                        }
+                        Box(
+                            modifier = Modifier.fillMaxSize().padding(25.dp),
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
+                            Button(
+                                modifier = Modifier
+                                    .size(60.dp),
+                                shape = CircleShape,
+                                onClick = {
+                                    GlobalScope.launch(Dispatchers.IO) {
+                                        viewModel.setCurrentLocation()
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color.White
+                                ),
+                                content = {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(id = R.drawable.baseline_my_location_24),
+                                        tint = Color.Red,
+                                        contentDescription = "",
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                }
                             )
                         }
                     }

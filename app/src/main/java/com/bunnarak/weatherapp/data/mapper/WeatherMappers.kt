@@ -2,6 +2,7 @@ package com.bunnarak.weatherapp.data.mapper
 
 import com.bunnarak.weatherapp.data.remote.WeatherDataDto
 import com.bunnarak.weatherapp.data.remote.WeatherDto
+import com.bunnarak.weatherapp.domain.datetime.getDateTime
 import com.bunnarak.weatherapp.domain.weather.WeatherData
 import com.bunnarak.weatherapp.domain.weather.WeatherInfo
 import com.bunnarak.weatherapp.domain.weather.WeatherType
@@ -40,7 +41,7 @@ fun WeatherDataDto.toWeatherData(): Map<Int, List<WeatherData>> {
 
 fun WeatherDto.toWeatherInfo(): WeatherInfo {
     val weatherDataMap = weatherData.toWeatherData()
-    val now = LocalDateTime.now()
+    val now = getDateTime()
     val currentWeatherData = weatherDataMap[0]?.find {
         val hour = if (now.minute < 30) now.hour else now.hour + 1
         it.time.hour == hour

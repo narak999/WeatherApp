@@ -7,7 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import java.util.TimeZone
 
-var isLocation: Boolean = false
+private var isLocation: Boolean = false
 
 fun getLatLngFromLocationName(context: Context, locationName: String): Pair<Double, Double>? {
     val geocoder = Geocoder(context)
@@ -17,6 +17,7 @@ fun getLatLngFromLocationName(context: Context, locationName: String): Pair<Doub
             val latitude = addresses[0].latitude
             val longitude = addresses[0].longitude
             isLocation = true
+            //println("Latitude: $latitude\nLongitude: $longitude")
             return Pair(latitude, longitude)
         }
     } catch (e: Exception) {
