@@ -12,7 +12,7 @@ interface WeatherApi {
         @Query("timezone") timezone: String
     ): WeatherDto
 
-    @GET("v1/forecast?daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum,precipitation_probability_max,windspeed_10m_max,precipitation_hours,uv_index_max")
+    @GET("v1/forecast?daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum,precipitation_probability_max,windspeed_10m_max,precipitation_hours,uv_index_max")
     suspend fun getDailyWeatherData(
         @Query("latitude") lat: Double,
         @Query("longitude") long: Double,

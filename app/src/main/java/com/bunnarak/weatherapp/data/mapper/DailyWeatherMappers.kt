@@ -15,6 +15,7 @@ data class DailyIndexedWeatherData(
 
 fun DailyWeatherDataDto.toDailyWeatherData(): Map<Int, List<DailyWeatherData>> {
     return time.mapIndexed { index, time ->
+        val weatherCode = weatherCodes[index]
         val temperatureMax = temperaturesMax[index]
         val temperatureMin = temperaturesMin[index]
         val sunrise = sunrise[index]
@@ -28,6 +29,7 @@ fun DailyWeatherDataDto.toDailyWeatherData(): Map<Int, List<DailyWeatherData>> {
             index = index,
             data = DailyWeatherData(
                 time = LocalDate.parse(time, DateTimeFormatter.ISO_LOCAL_DATE),
+                weatherCode = weatherCode,
                 temperatureMax = temperatureMax,
                 temperatureMin = temperatureMin,
                 sunrise = sunrise,

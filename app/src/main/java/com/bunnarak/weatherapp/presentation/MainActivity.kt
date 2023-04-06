@@ -81,6 +81,7 @@ class MainActivity : ComponentActivity() {
                                 context = context
                             )
                             WeatherForecast(state = viewModel.state)
+                            DailyForecast(state = viewModel.state2)
                         }
                         Box(
                             modifier = Modifier
