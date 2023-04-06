@@ -1,16 +1,15 @@
 package com.bunnarak.weatherapp.presentation
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,9 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.bunnarak.weatherapp.R
 import com.bunnarak.weatherapp.domain.location.*
@@ -54,20 +52,18 @@ class MainActivity : ComponentActivity() {
             viewModel.state.weatherInfo?.currentWeatherData?.weatherType?.let { data ->
                 WeatherAppTheme {
                     Box(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = data.modifier.fillMaxSize()
                     ) {
-                        Image(
-                            painter = painterResource(id = data.backgroundImage),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        Column (modifier = Modifier.fillMaxSize()) {
+                        Column (
+                            modifier = Modifier
+                                .verticalScroll(rememberScrollState())
+                                .fillMaxSize()
+                        ) {
                             Spacer(modifier = Modifier.height(23.dp))
                             SearchBar(
                                 hint = "Enter location name",
                                 onSearch = {query ->
-                                    //setLocationName(query)
+                                    setLocationName(query)
                                     GlobalScope.launch(Dispatchers.IO) {
                                         //Log.d(TAG, "Search Bar: ${Thread.currentThread().name}")
                                         val coordinate: Pair<Double, Double>? = getLatLngFromLocationName(context, query)
@@ -84,9 +80,12 @@ class MainActivity : ComponentActivity() {
                                 backgroundColor = Color(0xFF009DFF),
                                 context = context
                             )
+                            WeatherForecast(state = viewModel.state)
                         }
                         Box(
-                            modifier = Modifier.fillMaxSize().padding(25.dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(25.dp),
                             contentAlignment = Alignment.BottomEnd
                         ) {
                             Button(
@@ -109,6 +108,21 @@ class MainActivity : ComponentActivity() {
                                         modifier = Modifier.fillMaxSize()
                                     )
                                 }
+                            )
+                        }
+
+//                        if (viewModel.state.isLoading) {
+//                            CircularProgressIndicator(
+//                                modifier = Modifier.align(Alignment.Center)
+//                            )
+//                        }
+
+                        viewModel.state.error?.let {error ->
+                            Text(
+                                text = error,
+                                color = Color.Red,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.align(Alignment.Center)
                             )
                         }
                     }

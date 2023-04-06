@@ -1,7 +1,5 @@
 package com.bunnarak.weatherapp.presentation
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -45,7 +43,6 @@ class WeatherViewModel @Inject constructor(
                     setLat(latitude)
                     setLong(longitude)
                 }
-                println("Latitude: $latitude\nLongitude: $longitude")
                 val result = withContext(Dispatchers.IO) {
                     //Log.d(TAG, "loadWeatherInfo: ${Thread.currentThread().name}")
                     repository.getWeatherData(latitude, longitude)
