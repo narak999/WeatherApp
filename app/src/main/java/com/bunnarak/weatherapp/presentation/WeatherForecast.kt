@@ -30,6 +30,7 @@ fun WeatherForecast(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "Today",
                     fontSize = 20.sp,
                     color = Color.White

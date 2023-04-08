@@ -23,7 +23,7 @@ fun GetCityAndCountry (
         address = try {
             val geocoder = Geocoder(context, Locale.getDefault())
             val addresses = geocoder.getFromLocation(lat, long, 1)
-            if (addresses.isNotEmpty()) {
+            if (addresses?.isNotEmpty() == true) {
                 val city = addresses[0].locality ?: ""
                 val country = addresses[0].countryCode ?: ""
                 "$city, $country"

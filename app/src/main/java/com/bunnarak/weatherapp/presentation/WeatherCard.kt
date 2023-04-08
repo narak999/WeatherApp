@@ -121,7 +121,7 @@ fun WeatherCard (
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = data.weatherType.weatherDesc,
-                            fontSize = 20.sp,
+                            fontSize = 25.sp,
                             color = Color.White,
                             style = MaterialTheme.typography.body1,
                             modifier = Modifier.graphicsLayer { alpha = animateFront }

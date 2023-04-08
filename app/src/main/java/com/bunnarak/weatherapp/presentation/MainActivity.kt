@@ -1,6 +1,8 @@
 package com.bunnarak.weatherapp.presentation
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -65,7 +67,7 @@ class MainActivity : ComponentActivity() {
                                 onSearch = {query ->
                                     setLocationName(query)
                                     GlobalScope.launch(Dispatchers.IO) {
-                                        //Log.d(TAG, "Search Bar: ${Thread.currentThread().name}")
+                                        Log.d(TAG, "Search Bar: ${Thread.currentThread().name}")
                                         val coordinate: Pair<Double, Double>? = getLatLngFromLocationName(context, query)
                                         if (coordinate != null) {
                                             setLat(coordinate.first)
