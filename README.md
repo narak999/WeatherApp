@@ -39,5 +39,6 @@ weather information for their current location and <mark>Dynamic Background</mar
 background color changes depending the weather condition.
 
 # Note
-This is my first take on Android App Development. This project is partially based on Philipp Lackner
+This is my first take on Android App Development. Plus, the app only works with API level 28 (Android Pie) or below.
+This project is partially based on Philipp Lackner
 Weather App Youtube tutorial. Link to his channel: [Philipp Lackner](https://www.youtube.com/@PhilippLackner)
